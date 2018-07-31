@@ -122,13 +122,24 @@ class Network(object):
         assert c_i % group == 0
         assert c_o % group == 0
         # Convolution for a given input and kernel
-        convolve = lambda i, k: tf.nn.conv2d(i, k, [1, s_h, s_w, 1], padding=padding)
+
+        is_depthconv = False
+        if group==c_o and group==c_i:
+          is_depthconv = True
+
+        if not is_depthconv:
+            convolve = lambda i, k: tf.nn.conv2d(i, k, [1, s_h, s_w, 1], padding=padding)
+        else:
+            convolve = lambda i, k: tf.nn.depthwise_conv2d_native(i, k, [1, s_h, s_w, 1], padding=padding)
         with tf.variable_scope(name) as scope:
-            kernel = self.make_var('weights', shape=[k_h, k_w, c_i / group, c_o])
-            if group == 1:
+            if is_depthconv:
+                kernel = self.make_var('weights', shape=[k_h, k_w, c_i, c_o / group])
+            else:
+                kernel = self.make_var('weights', shape=[k_h, k_w, c_i / group, c_o])
+            if group == 1 or (is_depthconv):
                 # This is the common-case. Convolve the input without any further complications.
                 output = convolve(input, kernel)
-            else:
+            if group != 1 and (not is_depthconv):
                 # Split the input into groups and then convolve each of them independently
                 input_groups = tf.split(axis=3, num_or_size_splits=group, value=input)
                 kernel_groups = tf.split(axis=3, num_or_size_splits=group, value=kernel)
