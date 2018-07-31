@@ -136,18 +136,19 @@ class DataReshaper(object):
                 weights = weights.transpose(self.map(NodeKind.Convolution))
                 node.reshaped_data = weights.reshape(fc_shape[transpose_order[0]],
                                                      fc_shape[transpose_order[1]])
-            else:
-                if node.kind == NodeKind.Convolution:
-                    group = node.layer.parameters.group
-                    c_in = node.get_only_parent().output_shape.channels
-                    c_out = weights.shape[0]
-                    if c_in==group and c_out==group:
-                        node.reshaped_data = weights.transpose((2, 3, 0, 1))
-                    else:
-                        node.reshaped_data = weights.transpose(transpose_order)
+            elif (node.kind == NodeKind.InnerProduct) and (not self.has_spatial_parent(node)):
+                fc_shape = weights.shape
+                node.reshaped_data = weights.reshape(1, 1, fc_shape[1], fc_shape[0])
+            elif node.kind == NodeKind.Convolution:
+                group = node.layer.parameters.group
+                c_in = node.get_only_parent().output_shape.channels
+                c_out = weights.shape[0]
+                if c_in==group and c_out==group:
+                    node.reshaped_data = weights.transpose((2, 3, 0, 1))
                 else:
                     node.reshaped_data = weights.transpose(transpose_order)
-
+            else:
+                node.reshaped_data = weights.transpose(transpose_order)
         if self.replace:
             for node in graph.nodes:
                 if hasattr(node, 'reshaped_data'):

@@ -118,11 +118,18 @@ class TensorFlowMapper(NodeMapper):
                               kernel_params.stride_h, kernel_params.stride_w, **padding)
 
     def map_inner_product(self, node):
-        #TODO: Axis
-        assert node.parameters.axis == 1
-        #TODO: Unbiased
-        assert node.parameters.bias_term == True
-        return MaybeActivated(node)('fc', node.parameters.num_output)
+        # #TODO: Axis
+        # assert node.parameters.axis == 1
+        # #TODO: Unbiased
+        # assert node.parameters.bias_term == True
+        # return MaybeActivated(node)('fc', node.parameters.num_output)
+        kwargs = {}
+        h = 1
+        w = 1
+        stride_h = 1
+        stride_w = 1
+        c_o = node.parameters.num_output
+        return MaybeActivated(node)('conv', h, w, c_o, stride_h, stride_w, **kwargs)
 
     def map_softmax(self, node):
         return TensorFlowNode('softmax')

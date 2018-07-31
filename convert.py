@@ -83,13 +83,19 @@ def convert(def_path, caffemodel_path, data_output_path, code_output_path, stand
             saver.save(sess, checkpoint_path)
 
             print_stderr('Saving graph definition as protobuf...')
+            graph_def = sess.graph.as_graph_def()
+            for node in graph_def.node:
+                print node.name
+
             tf.train.write_graph(sess.graph.as_graph_def(), graph_folder, graph_name, False)
 
             input_graph_path = standalone_output_path
             input_saver_def_path = ""
             input_binary = True
             input_checkpoint_path = checkpoint_path
-            output_node_names = output_node
+
+            # warning: output_node may be changed
+            output_node_names = output_node + '/BiasAdd'
             restore_op_name = 'save/restore_all'
             filename_tensor_name = 'save/Const:0'
             output_graph_path = standalone_output_path
