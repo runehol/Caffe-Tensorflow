@@ -38,13 +38,17 @@ def convert(def_path, caffemodel_path, data_output_path, code_output_path, stand
                 np.save(data_out, data)
         if code_output_path is not None:
             print_stderr('Saving source...')
-            with open(code_output_path, 'wb') as src_out:
+            with open(code_output_path, 'w') as src_out:
                 src_out.write(transformer.transform_source())
 
         if standalone_output_path:
             filename, _ = os.path.splitext(os.path.basename(standalone_output_path))
             temp_folder = os.path.join(os.path.dirname(standalone_output_path), '.tmp')
-            os.makedirs(temp_folder)
+            try:
+                os.makedirs(temp_folder)
+            except OSError:
+                pass
+
 
             if data_output_path is None:
                 data = transformer.transform_data()
@@ -85,7 +89,7 @@ def convert(def_path, caffemodel_path, data_output_path, code_output_path, stand
             print_stderr('Saving graph definition as protobuf...')
             graph_def = sess.graph.as_graph_def()
             for node in graph_def.node:
-                print node.name
+                print(node.name)
 
             tf.train.write_graph(sess.graph.as_graph_def(), graph_folder, graph_name, False)
 

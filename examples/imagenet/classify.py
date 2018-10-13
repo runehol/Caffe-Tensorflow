@@ -12,17 +12,17 @@ def display_results(image_paths, probs):
     '''Displays the classification results given the class probability for each image'''
     # Get a list of ImageNet class labels
     with open('imagenet-classes.txt', 'rb') as infile:
-        class_labels = map(str.strip, infile.readlines())
+        class_labels = list(map(str.strip, infile.readlines()))
     # Pick the class with the highest confidence for each image
     class_indices = np.argmax(probs, axis=1)
     # Display the results
-    print('\n{:20} {:30} {}'.format('Image', 'Classified As', 'Confidence'))
-    print('-' * 70)
+    print(('\n{:20} {:30} {}'.format('Image', 'Classified As', 'Confidence')))
+    print(('-' * 70))
     for img_idx, image_path in enumerate(image_paths):
         img_name = osp.basename(image_path)
         class_name = class_labels[class_indices[img_idx]]
         confidence = round(probs[img_idx, class_indices[img_idx]] * 100, 2)
-        print('{:20} {:30} {} %'.format(img_name, class_name, confidence))
+        print(('{:20} {:30} {} %'.format(img_name, class_name, confidence)))
 
 
 def classify(model_data_path, image_paths):

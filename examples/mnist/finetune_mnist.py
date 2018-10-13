@@ -11,7 +11,7 @@ batch_size = 32
 
 def gen_data(source):
     while True:
-        indices = range(len(source.images))
+        indices = list(range(len(source.images)))
         random.shuffle(indices)
         for i in indices:
             image = np.reshape(source.images[i], (28, 28, 1))
@@ -53,4 +53,4 @@ with tf.Session() as sess:
 
         np_loss, np_pred, _ = sess.run([loss, pred, train_op], feed_dict=feed)
         if i % 10 == 0:
-            print('Iteration: ', i, np_loss)
+            print(('Iteration: ', i, np_loss))

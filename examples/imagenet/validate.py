@@ -21,7 +21,7 @@ def load_model(name):
         print('Invalid model index. Options are:')
         # Display a list of valid model names
         for model in all_models:
-            print('\t* {}'.format(model.__name__))
+            print(('\t* {}'.format(model.__name__)))
         return None
     NetClass = lut[name]
 
@@ -66,11 +66,11 @@ def validate(net, model_path, image_producer, top_k=5):
                                                   label_node: labels}))
             count += len(labels)
             cur_accuracy = float(correct) * 100 / count
-            print('{:>6}/{:<6} {:>6.2f}%'.format(count, total, cur_accuracy))
+            print(('{:>6}/{:<6} {:>6.2f}%'.format(count, total, cur_accuracy)))
         # Stop the worker threads
         coordinator.request_stop()
         coordinator.join(threads, stop_grace_period_secs=2)
-    print('Top {} Accuracy: {}'.format(top_k, float(correct) / total))
+    print(('Top {} Accuracy: {}'.format(top_k, float(correct) / total)))
 
 
 

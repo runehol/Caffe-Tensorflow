@@ -5,12 +5,12 @@ import numpy as np
 # Add the kaffe module to the import path
 sys.path.append(osp.realpath(osp.join(osp.dirname(__file__), '../../../')))
 
-from googlenet import GoogleNet
-from vgg import VGG16
-from alexnet import AlexNet
-from caffenet import CaffeNet
-from nin import NiN
-from resnet import ResNet50, ResNet101, ResNet152
+from .googlenet import GoogleNet
+from .vgg import VGG16
+from .alexnet import AlexNet
+from .caffenet import CaffeNet
+from .nin import NiN
+from .resnet import ResNet50, ResNet101, ResNet152
 
 
 class DataSpec(object):
